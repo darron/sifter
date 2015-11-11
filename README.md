@@ -29,4 +29,8 @@ When this gets loaded into Consul - instead of launching copies and copies of `c
 
 `stdin='blank' NOT running 'chef-client'`
 
+When you actually send the event - the logs will show this - and the event will fire:
+
+`stdin='[{"ID":"long-semi-random-uuid-goes-here","Name":"chef-client","Payload":null,"NodeFilter":"","ServiceFilter":"service-name","TagFilter":"consul-server","Version":1,"LTime":1137}]' exec='chef-client'`
+
 This is just an hour long hack - it doesn't do much - just wanted to see if this would work.
