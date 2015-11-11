@@ -1,0 +1,3 @@
+#!/bin/bash
+SIFTER_VERSION="0.1"
+echo $SIFTER_VERSION
