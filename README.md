@@ -1,9 +1,9 @@
 sifter
 ============
 
-Consul watches act in a bit of a peculiar way - when you reload it - they all fire.
+[Consul watches](https://www.consul.io/docs/agent/watches.html) act in a bit of a interesting way - when you reload the program - they all fire.
 
-It's a [fairly well known bug that doesn't have a fix yet](https://github.com/hashicorp/consul/issues/571).
+It's a [fairly well known limitation that doesn't have a fix at the moment](https://github.com/hashicorp/consul/issues/571).
 
 If it's a really lightweight item - no problem - but if it's not so lightweight - then it can be a bit of a problem.
 
@@ -11,7 +11,7 @@ If you take a look at what the watch passes on STDIN - you will see that if it's
 
 `[]\n`
 
-So - `sifter` is a small Go binary that helps protect against watches firing accidentally:
+So - `sifter` is a small Go binary that helps protect against watches firing when they shouldn't:
 
 ```
 {
@@ -25,7 +25,7 @@ So - `sifter` is a small Go binary that helps protect against watches firing acc
 }
 ```
 
-When this gets loaded into Consul - instead of launching copies and copies of `chef-client` processes - it will just say:
+When this gets loaded into Consul - instead of launching copies and copies of `chef-client` processes - which is not awesome I promise - it will just say:
 
 `stdin='blank' NOT running 'chef-client'`
 
