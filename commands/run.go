@@ -26,7 +26,7 @@ func startRun(cmd *cobra.Command, args []string) {
 			log.Print(fmt.Sprintf("stdin='%s' exec='%s'", strings.TrimSpace(stdin), Exec))
 			runCommand(Exec)
 		} else {
-			log.Print(fmt.Sprintf("stdin was blank"))
+			log.Print(fmt.Sprintf("stdin='blank' NOT running '%s'", Exec))
 		}
 	}
 
@@ -58,7 +58,7 @@ func checkFlags() {
 func readStdin() string {
 	bytes, _ := ioutil.ReadAll(os.Stdin)
 	stdin := string(bytes)
-	if stdin == "" || stdin == "\n" || stdin == "[]" {
+	if stdin == "" || stdin == "[]\n" || stdin == "\n" {
 		return ""
 	} else {
 		return stdin
