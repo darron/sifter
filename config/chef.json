@@ -1,0 +1,9 @@
+{
+  "watches": [
+    {
+      "type": "event",
+      "name": "chef-client",
+      "handler": "sifter run -e chef-client"
+    }
+  ]
+}
