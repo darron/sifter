@@ -16,9 +16,9 @@ var runCmd = &cobra.Command{
 }
 
 func startRun(cmd *cobra.Command, args []string) {
-	start := time.Now()
 	var oldEvent int64
 	checkFlags()
+	start := time.Now()
 
 	if Exec != "" {
 		stdin := readStdin()
