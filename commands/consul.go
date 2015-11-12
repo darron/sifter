@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"log"
 	consul "github.com/hashicorp/consul/api"
 	"strings"
 )
@@ -45,6 +46,7 @@ func cleanupToken(token string) string {
 func Set(c *consul.Client, key, value string) bool {
 	p := &consul.KVPair{Key: key, Value: []byte(value)}
 	kv := c.KV()
+	log.Print(fmt.Sprintf("key='%s' value='%s'", key, value))
 	_, err := kv.Put(p, nil)
 	if err != nil {
 		panic(err)

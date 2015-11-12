@@ -23,7 +23,6 @@ func startRun(cmd *cobra.Command, args []string) {
 		stdin := readStdin()
 		if stdin != "" {
 			EventName, lTime := decodeStdin(stdin)
-			log.Print(fmt.Sprintf("decoded event='%s' ltime='%d'", EventName, lTime))
 			ConsulKey := createKey(EventName)
 
 			c, _ := Connect()
@@ -35,7 +34,6 @@ func startRun(cmd *cobra.Command, args []string) {
 			if ConsulData == "" || oldEvent < lTime {
 				intString := strconv.FormatInt(int64(lTime), 10)
 				Set(c, ConsulKey, intString)
-				log.Print(fmt.Sprintf("ltime='%s' exec='%s'", intString, Exec))
 				runCommand(Exec)
 			} else {
 				log.Print(fmt.Sprintf("status='old' stopping"))
