@@ -15,9 +15,11 @@ var RootCmd = &cobra.Command{
 }
 
 var (
-	Exec string
+	Exec  string
+	Token string
 )
 
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&Exec, "exec", "e", "", "Execute this command if a payload is present.")
+	RootCmd.PersistentFlags().StringVarP(&Token, "token", "t", "anonymous", "Token for Consul access")
 }

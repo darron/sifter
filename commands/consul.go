@@ -6,14 +6,10 @@ import (
 	"strings"
 )
 
-func Connect() (*consul.Client, error) {
-	// var cleanedToken = ""
+func Connect(token string) (*consul.Client, error) {
 	config := consul.DefaultConfig()
+	config.Token = token
 	// config.Address = server
-	// if token != "" {
-	// 	config.Token = token
-	// 	cleanedToken = cleanupToken(token)
-	// }
 	consul, _ := consul.NewClient(config)
 	return consul, nil
 }
