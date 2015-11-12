@@ -36,9 +36,9 @@ func startRun(cmd *cobra.Command, args []string) {
 			if ConsulData == "" || oldEvent < lTime {
 				Set(c, ConsulKey, lTimeString)
 				runCommand(Exec)
-				RunTime(start, "complete", fmt.Sprintf("exec='%s'", Exec))
+				RunTime(start, "complete", fmt.Sprintf("exec='%s' ltime='%d'", Exec, lTime))
 			} else {
-				RunTime(start, "stopping", fmt.Sprintf("exec='%s'", Exec))
+				RunTime(start, "duplicate", fmt.Sprintf("exec='%s' ltime='%d'", Exec, lTime))
 			}
 
 		} else {
