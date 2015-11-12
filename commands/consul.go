@@ -16,7 +16,6 @@ func Connect() (*consul.Client, error) {
 	// 	cleanedToken = cleanupToken(token)
 	// }
 	consul, _ := consul.NewClient(config)
-	// Log(fmt.Sprintf("%s: server='%s' token='%s'", direction, server, cleanedToken), "debug")
 	return consul, nil
 }
 
@@ -32,7 +31,6 @@ func Get(c *consul.Client, key string) string {
 		} else {
 			value = ""
 		}
-		// Log(fmt.Sprintf("%s: action='get' key='%s'", direction, key), "debug")
 	}
 	return value
 }
@@ -51,7 +49,6 @@ func Set(c *consul.Client, key, value string) bool {
 	if err != nil {
 		panic(err)
 	} else {
-		// Log(fmt.Sprintf("%s: action='set' key='%s'", direction, key), "debug")
 		return true
 	}
 	return true
