@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"log"
 	"os"
-	"strings"
+	"strconv"
 )
 
 var runCmd = &cobra.Command{
@@ -16,12 +16,31 @@ var runCmd = &cobra.Command{
 }
 
 func startRun(cmd *cobra.Command, args []string) {
+	var oldEvent int64
 	checkFlags()
+
 	if Exec != "" {
 		stdin := readStdin()
 		if stdin != "" {
-			log.Print(fmt.Sprintf("stdin='%s' exec='%s'", strings.TrimSpace(stdin), Exec))
-			runCommand(Exec)
+			EventName, lTime := decodeStdin(stdin)
+			log.Print(fmt.Sprintf("event='%s' ltime='%d'", EventName, lTime))
+			ConsulKey := createKey(EventName)
+
+			c, _ := Connect()
+			ConsulData := Get(c, ConsulKey)
+			if ConsulData != "" {
+				oldEvent, _ = strconv.ParseInt(ConsulData, 10, 32)
+			}
+
+			if ConsulData == "" || oldEvent < lTime {
+				intString := strconv.FormatInt(int64(lTime), 10)
+				Set(c, ConsulKey, intString)
+				log.Print(fmt.Sprintf("ltime='%s' exec='%s'", intString, Exec))
+				runCommand(Exec)
+			} else {
+				log.Print(fmt.Sprintf("event='old' ltime='%s'", ConsulData))
+			}
+
 		} else {
 			log.Print(fmt.Sprintf("stdin='blank' NOT running '%s'", Exec))
 		}
