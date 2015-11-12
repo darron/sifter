@@ -53,6 +53,10 @@ func readStdin() string {
 	if stdin == "" || stdin == "[]\n" || stdin == "\n" {
 		return ""
 	} else {
+		// TODO: Yes this is a gross hack and only works if
+		// there is a single event in the payload.
+		stdin = strings.TrimPrefix(stdin, "[")
+		stdin = strings.TrimSuffix(stdin, "]\n")
 		return stdin
 	}
 }
