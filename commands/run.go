@@ -27,7 +27,7 @@ func startRun(cmd *cobra.Command, args []string) {
 			lTimeString := strconv.FormatInt(int64(lTime), 10)
 			ConsulKey := createKey(EventName)
 
-			c, _ := Connect(Token)
+			c, _ := Connect()
 			ConsulData := Get(c, ConsulKey)
 			if ConsulData != "" {
 				oldEvent, _ = strconv.ParseInt(ConsulData, 10, 64)

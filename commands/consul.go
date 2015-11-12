@@ -6,9 +6,9 @@ import (
 	"strings"
 )
 
-func Connect(token string) (*consul.Client, error) {
+func Connect() (*consul.Client, error) {
 	config := consul.DefaultConfig()
-	config.Token = token
+	config.Token = Token
 	// config.Address = server
 	consul, _ := consul.NewClient(config)
 	return consul, nil
