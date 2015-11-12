@@ -3,9 +3,9 @@ package commands
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"log"
 	"os"
 	"strconv"
+	"time"
 )
 
 var runCmd = &cobra.Command{
@@ -16,6 +16,7 @@ var runCmd = &cobra.Command{
 }
 
 func startRun(cmd *cobra.Command, args []string) {
+	start := time.Now()
 	var oldEvent int64
 	checkFlags()
 
@@ -23,6 +24,7 @@ func startRun(cmd *cobra.Command, args []string) {
 		stdin := readStdin()
 		if stdin != "" {
 			EventName, lTime := decodeStdin(stdin)
+			lTimeString := strconv.FormatInt(int64(lTime), 10)
 			ConsulKey := createKey(EventName)
 
 			c, _ := Connect()
@@ -32,15 +34,15 @@ func startRun(cmd *cobra.Command, args []string) {
 			}
 
 			if ConsulData == "" || oldEvent < lTime {
-				intString := strconv.FormatInt(int64(lTime), 10)
-				Set(c, ConsulKey, intString)
+				Set(c, ConsulKey, lTimeString)
 				runCommand(Exec)
+				RunTime(start, "complete", fmt.Sprintf("exec='%s'", Exec))
 			} else {
-				log.Print(fmt.Sprintf("status='old' stopping"))
+				RunTime(start, "stopping", fmt.Sprintf("exec='%s'", Exec))
 			}
 
 		} else {
-			log.Print(fmt.Sprintf("stdin='blank' NOT running '%s'", Exec))
+			RunTime(start, "blank", fmt.Sprintf("exec='%s'", Exec))
 		}
 	}
 

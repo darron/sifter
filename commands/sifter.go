@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"strings"
@@ -66,6 +65,6 @@ func decodeStdin(data string) (string, int64) {
 	}
 	name := string(events.Name)
 	lTime := int64(events.LTime)
-	log.Print(fmt.Sprintf("decoded event='%s' ltime='%d'", name, lTime))
+	Log(fmt.Sprintf("decoded event='%s' ltime='%d'", name, lTime), "info")
 	return name, lTime
 }
