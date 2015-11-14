@@ -65,7 +65,8 @@ func decodeStdin(data string) (string, int64) {
 	var events ConsulEvent
 	err := json.Unmarshal([]byte(data), &events)
 	if err != nil {
-		fmt.Println("%#v", err)
+		Log(fmt.Sprintf("error: %s", data), "info")
+		os.Exit(1)
 	}
 	name := string(events.Name)
 	lTime := int64(events.LTime)
