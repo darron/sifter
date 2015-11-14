@@ -11,7 +11,7 @@ If you take a look at what the watch passes on STDIN during a Consul reload - yo
 
 `[]\n`
 
-So - `sifter` is a small Go binary that helps protect against event watches firing repeatadly:
+So - `sifter` is a small Go binary that helps protect against event watches firing repeatedly:
 
 ```
 {
@@ -19,7 +19,7 @@ So - `sifter` is a small Go binary that helps protect against event watches firi
     {
       "type": "event",
       "name": "chef-client",
-      "handler": "sifter run -e chef-client"
+      "handler": "sifter run -e 'chef-client'"
     }
   ]
 }
@@ -40,5 +40,3 @@ location='complete' elapsed='47.448987142s' exec='chef-client'
 Afterwards - if it sees the same event:
 
 `location='duplicate' elapsed='8.269276ms' exec='chef-client'`
-
-This is just an hour long hack - it doesn't do much - just wanted to see if this would work.
