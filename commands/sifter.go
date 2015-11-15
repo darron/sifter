@@ -53,23 +53,25 @@ func readStdin() string {
 	if stdin == "" || stdin == "[]\n" || stdin == "\n" {
 		return ""
 	} else {
-		// TODO: Yes this is a gross hack and only works if
-		// there is a single event in the payload.
-		stdin = strings.TrimPrefix(stdin, "[")
-		stdin = strings.TrimSuffix(stdin, "]\n")
 		return stdin
 	}
 }
 
 func decodeStdin(data string) (string, int64) {
-	var events ConsulEvent
+	events := make([]ConsulEvent, 0)
 	err := json.Unmarshal([]byte(data), &events)
 	if err != nil {
 		Log(fmt.Sprintf("error: %s", data), "info")
 		os.Exit(1)
 	}
-	name := string(events.Name)
-	lTime := int64(events.LTime)
+	var name = ""
+	var lTime = int64(0)
+	for _, event := range events {
+		name = string(event.Name)
+		if int64(event.LTime) > lTime {
+			lTime = int64(event.LTime)
+		}
+	}
 	Log(fmt.Sprintf("decoded event='%s' ltime='%d'", name, lTime), "info")
 	return name, lTime
 }
