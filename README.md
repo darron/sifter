@@ -5,7 +5,7 @@ sifter
 
 It's a [fairly well known limitation that doesn't have a fix at the moment](https://github.com/hashicorp/consul/issues/571).
 
-If it's a really lightweight item - no problem - but if it's not so lightweight - then it can be a bit of a problem.
+If it's a really lightweight process then it's not a big deal - but if it's not so lightweight - then it can be a bit of a problem.
 
 If you take a look at what the watch passes on STDIN during a Consul reload - you will see that if it's not actually firing it just passes:
 
