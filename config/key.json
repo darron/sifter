@@ -1,0 +1,9 @@
+{
+  "watches": [
+    {
+      "type": "key",
+      "key": "sifter/watch",
+      "handler": "sifter run -e \"logger -t sifter This is the key watch.\""
+    }
+  ]
+}

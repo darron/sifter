@@ -40,3 +40,9 @@ location='complete' elapsed='47.448987142s' exec='chef-client'
 Afterwards - if it sees the same event:
 
 `location='duplicate' elapsed='8.269276ms' exec='chef-client'`
+
+## Development
+
+`brew install forego` if you want to start up Redis and Consul to test.
+
+Have added some watches in the `config/` folder as well as example Consul output - input to sifter in the `test/` folder.

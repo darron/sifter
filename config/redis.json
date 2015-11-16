@@ -1,0 +1,9 @@
+{
+  "service": {
+    "name": "redis",
+    "check": {
+      "interval": "60s",
+      "script": "redis-cli ping"
+    }
+  }
+}

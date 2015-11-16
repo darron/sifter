@@ -1,0 +1,9 @@
+{
+  "watches": [
+    {
+      "type": "service",
+      "service": "redis",
+      "handler": "sifter run -e \"logger -t sifter This is the service watch.\""
+    }
+  ]
+}
