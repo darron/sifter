@@ -8,16 +8,19 @@ import (
 	"time"
 )
 
-var runCmd = &cobra.Command{
-	Use:   "run",
-	Short: "Run a binary.",
-	Long:  `run starts a binary if there's an actually new Consul event.`,
-	Run:   startRun,
+var eventCmd = &cobra.Command{
+	Use:     "event",
+	Short:   "Run a binary from a Consul event watch.",
+	Aliases: []string{"run"},
+	PreRun: func(cmd *cobra.Command, args []string) {
+		checkEventFlags()
+	},
+	Long: `event runs a binary if there's an actually new Consul event.`,
+	Run:  startEvent,
 }
 
-func startRun(cmd *cobra.Command, args []string) {
+func startEvent(cmd *cobra.Command, args []string) {
 	var oldEvent int64
-	checkFlags()
 	start := time.Now()
 
 	if Exec != "" {
@@ -36,22 +39,22 @@ func startRun(cmd *cobra.Command, args []string) {
 			if ConsulData == "" || oldEvent < lTime {
 				Set(c, ConsulKey, lTimeString)
 				runCommand(Exec)
-				RunTime(start, "complete", fmt.Sprintf("exec='%s' ltime='%d'", Exec, lTime))
+				RunTime(start, "complete", fmt.Sprintf("watch='event' exec='%s' ltime='%d'", Exec, lTime))
 				if DogStatsd {
 					StatsdRunTime(start, EventName, Exec, lTime)
 				}
 			} else {
-				RunTime(start, "duplicate", fmt.Sprintf("exec='%s' ltime='%d'", Exec, lTime))
+				RunTime(start, "duplicate", fmt.Sprintf("watch='event' exec='%s' ltime='%d'", Exec, lTime))
 			}
 
 		} else {
-			RunTime(start, "blank", fmt.Sprintf("exec='%s'", Exec))
+			RunTime(start, "blank", fmt.Sprintf("watch='event' exec='%s'", Exec))
 		}
 	}
 
 }
 
-func checkFlags() {
+func checkEventFlags() {
 	if Exec == "" {
 		fmt.Println("Need a command to exec with '-e'")
 		os.Exit(0)
@@ -59,5 +62,5 @@ func checkFlags() {
 }
 
 func init() {
-	RootCmd.AddCommand(runCmd)
+	RootCmd.AddCommand(eventCmd)
 }
