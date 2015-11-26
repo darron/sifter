@@ -25,7 +25,7 @@ func startEvent(cmd *cobra.Command, args []string) {
 
 	stdin := readStdin()
 	if stdin != "" {
-		EventName, lTime := decodeStdin(stdin)
+		EventName, lTime, Payload := decodeStdin(stdin)
 		lTimeString := strconv.FormatInt(int64(lTime), 10)
 		ConsulKey := createKey(EventName)
 
@@ -37,7 +37,7 @@ func startEvent(cmd *cobra.Command, args []string) {
 
 		if ConsulData == "" || oldEvent < lTime {
 			Set(c, ConsulKey, lTimeString)
-			runCommand(Exec)
+			runCommand(Exec, Payload)
 			RunTime(start, "complete", fmt.Sprintf("watch='event' exec='%s' ltime='%d'", Exec, lTime))
 			if DogStatsd {
 				StatsdRunTime(start, EventName, Exec, lTime)
