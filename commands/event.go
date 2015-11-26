@@ -23,33 +23,31 @@ func startEvent(cmd *cobra.Command, args []string) {
 	var oldEvent int64
 	start := time.Now()
 
-	if Exec != "" {
-		stdin := readStdin()
-		if stdin != "" {
-			EventName, lTime := decodeStdin(stdin)
-			lTimeString := strconv.FormatInt(int64(lTime), 10)
-			ConsulKey := createKey(EventName)
+	stdin := readStdin()
+	if stdin != "" {
+		EventName, lTime := decodeStdin(stdin)
+		lTimeString := strconv.FormatInt(int64(lTime), 10)
+		ConsulKey := createKey(EventName)
 
-			c, _ := Connect()
-			ConsulData := Get(c, ConsulKey)
-			if ConsulData != "" {
-				oldEvent, _ = strconv.ParseInt(ConsulData, 10, 64)
-			}
-
-			if ConsulData == "" || oldEvent < lTime {
-				Set(c, ConsulKey, lTimeString)
-				runCommand(Exec)
-				RunTime(start, "complete", fmt.Sprintf("watch='event' exec='%s' ltime='%d'", Exec, lTime))
-				if DogStatsd {
-					StatsdRunTime(start, EventName, Exec, lTime)
-				}
-			} else {
-				RunTime(start, "duplicate", fmt.Sprintf("watch='event' exec='%s' ltime='%d'", Exec, lTime))
-			}
-
-		} else {
-			RunTime(start, "blank", fmt.Sprintf("watch='event' exec='%s'", Exec))
+		c, _ := Connect()
+		ConsulData := Get(c, ConsulKey)
+		if ConsulData != "" {
+			oldEvent, _ = strconv.ParseInt(ConsulData, 10, 64)
 		}
+
+		if ConsulData == "" || oldEvent < lTime {
+			Set(c, ConsulKey, lTimeString)
+			runCommand(Exec)
+			RunTime(start, "complete", fmt.Sprintf("watch='event' exec='%s' ltime='%d'", Exec, lTime))
+			if DogStatsd {
+				StatsdRunTime(start, EventName, Exec, lTime)
+			}
+		} else {
+			RunTime(start, "duplicate", fmt.Sprintf("watch='event' exec='%s' ltime='%d'", Exec, lTime))
+		}
+
+	} else {
+		RunTime(start, "blank", fmt.Sprintf("watch='event' exec='%s'", Exec))
 	}
 
 }
