@@ -1,14 +1,17 @@
 package commands
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"
+	"time"
 )
 
 var keyCmd = &cobra.Command{
-	Use:     "key",
-	Short:   "Run a binary from a Consul key watch.",
+	Use:   "key",
+	Short: "Run a binary from a Consul key watch.",
 	PreRun: func(cmd *cobra.Command, args []string) {
 		checkKeyFlags()
 	},
@@ -17,14 +20,15 @@ var keyCmd = &cobra.Command{
 }
 
 func startKey(cmd *cobra.Command, args []string) {
-  Log("Just started the key watch.", "info")
-  stdin := readStdin()
+	start := time.Now()
+	stdin := readStdin()
 	if stdin != "null" {
-    Log(fmt.Sprintf("stdin: '%s'", stdin), "info")
-    Log("stdin wasn't blank", "info")
-  } else {
-    Log("stdin WAS blank", "info")
-  }
+		d := decodeKeyStdin(stdin)
+		modified, key, value := d.examine()
+		Log(fmt.Sprintf("mod='%d' key='%s' value='%s'", modified, key, value), "info")
+	} else {
+		RunTime(start, "blank", fmt.Sprintf("watch='key' exec='%s'", Exec))
+	}
 }
 
 func checkKeyFlags() {
@@ -36,12 +40,28 @@ func checkKeyFlags() {
 
 type ConsulKey struct {
 	CreateIndex int    `json:"CreateIndex"`
-	Flags       int    `json:"Flags"`
+	Flags       int    `json:"Flags,omitempty"`
 	Key         string `json:"Key"`
-	LockIndex   int    `json:"LockIndex"`
+	LockIndex   int    `json:"LockIndex,omitempty"`
 	ModifyIndex int    `json:"ModifyIndex"`
-	Session     string `json:"Session"`
+	Session     string `json:"Session,omitempty"`
 	Value       string `json:"Value"`
+}
+
+func decodeKeyStdin(data string) *ConsulKey {
+	var key ConsulKey
+	err := json.Unmarshal([]byte(data), &key)
+	if err != nil {
+		Log(fmt.Sprintf("error: %s", err), "info")
+	}
+	return &key
+}
+
+func (c *ConsulKey) examine() (int, string, string) {
+	modified := c.ModifyIndex
+	keyName := c.Key
+	value, _ := base64.StdEncoding.DecodeString(c.Value)
+	return modified, keyName, string(value)
 }
 
 func init() {
