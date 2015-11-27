@@ -2,24 +2,12 @@ package commands
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
 )
-
-type ConsulEvent struct {
-	Id            string `json:"ID"`
-	Name          string `json:"Name"`
-	Payload       string `json:"Payload,omitempty"`
-	NodeFilter    string `json:"NodeFilter,omitempty"`
-	ServiceFilter string `json:"ServiceFilter"`
-	TagFilter     string `json:"TagFilter"`
-	Version       int    `json:"Version"`
-	LTime         int    `json:"LTime"`
-}
 
 func runCommand(command, payload string) bool {
 	parts := strings.Fields(command)
@@ -30,6 +18,7 @@ func runCommand(command, payload string) bool {
 		Log(fmt.Sprintf("exec='payload' payload='%s'", payload), "info")
 	}
 	cmd := exec.Command(cli, args...)
+	Log(fmt.Sprintf("exec='runCommand' cli='%s' args='%s'", cli, args), "debug")
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	err := cmd.Run()
@@ -59,25 +48,4 @@ func readStdin() string {
 	} else {
 		return stdin
 	}
-}
-
-func decodeStdin(data string) (string, int64, string) {
-	events := make([]ConsulEvent, 0)
-	err := json.Unmarshal([]byte(data), &events)
-	if err != nil {
-		Log(fmt.Sprintf("error: %s", data), "info")
-		os.Exit(1)
-	}
-	var name = ""
-	var lTime = int64(0)
-	var payload = ""
-	for _, event := range events {
-		name = string(event.Name)
-		if int64(event.LTime) > lTime {
-			lTime = int64(event.LTime)
-		}
-		payload = event.Payload
-	}
-	Log(fmt.Sprintf("decoded event='%s' ltime='%d'", name, lTime), "info")
-	return name, lTime, payload
 }

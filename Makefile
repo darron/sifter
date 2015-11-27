@@ -10,6 +10,7 @@ deps:
 	go get github.com/spf13/cobra
 	go get github.com/hashicorp/consul/api
 	go get github.com/PagerDuty/godspeed
+	go get github.com/pmylund/sortutil
 
 format:
 	gofmt -w .
