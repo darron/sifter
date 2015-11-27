@@ -7,7 +7,7 @@ import (
 
 var RootCmd = &cobra.Command{
 	Use:   "sifter",
-	Short: "Make sure there's a new event when Consul fires a watch.",
+	Short: "Make sure that a Consul watch only fires when it's appropriate.",
 	Long:  `When Consul loads watches, it often fires them with a blank JSON array. sifter makes sure there's an actual JSON entity present, that it's new and then runs your command.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("`sifter -h` for help information.")

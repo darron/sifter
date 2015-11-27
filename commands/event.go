@@ -17,7 +17,7 @@ var eventCmd = &cobra.Command{
 	PreRun: func(cmd *cobra.Command, args []string) {
 		checkEventFlags()
 	},
-	Long: `event runs a binary if there's an actually new Consul event.`,
+	Long: `event runs a binary if there's a new Consul event.`,
 	Run:  startEvent,
 }
 
