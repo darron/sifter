@@ -3,7 +3,7 @@
     {
       "type": "event",
       "name": "chef-client",
-      "handler": "sifter run -e \"logger -t sifter This is the event watch.\""
+      "handler": "bin/sifter event -e 'w'"
     }
   ]
 }
