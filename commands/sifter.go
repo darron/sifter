@@ -41,6 +41,6 @@ func readStdin() string {
 	if stdin == "" || stdin == "[]\n" || stdin == "\n" {
 		return ""
 	} else {
-		return stdin
+		return strings.TrimSpace(stdin)
 	}
 }
