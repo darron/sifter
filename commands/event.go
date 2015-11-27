@@ -29,7 +29,7 @@ func startEvent(cmd *cobra.Command, args []string) {
 	if stdin != "" {
 		EventName, lTime, Payload := decodeEventStdin(stdin)
 		lTimeString := strconv.FormatInt(int64(lTime), 10)
-		ConsulKey := createKey(EventName)
+		ConsulKey := createEventKey(EventName)
 
 		c, _ := Connect()
 		ConsulData := Get(c, ConsulKey)
@@ -70,6 +70,11 @@ type ConsulEvent struct {
 	TagFilter     string `json:"TagFilter"`
 	Version       int    `json:"Version"`
 	LTime         int    `json:"LTime"`
+}
+
+func createEventKey(event string) string {
+	hostname := getHostname()
+	return fmt.Sprintf("sifter/event/%s/%s", event, hostname)
 }
 
 func decodeEventStdin(data string) (string, int64, string) {

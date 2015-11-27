@@ -35,11 +35,6 @@ func getHostname() string {
 	return hostname
 }
 
-func createKey(event string) string {
-	hostname := getHostname()
-	return fmt.Sprintf("sifter/%s/%s", event, hostname)
-}
-
 func readStdin() string {
 	bytes, _ := ioutil.ReadAll(os.Stdin)
 	stdin := string(bytes)
