@@ -18,10 +18,12 @@ var (
 	Exec      string
 	Token     string
 	DogStatsd bool
+	Prefix    string
 )
 
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&Exec, "exec", "e", "", "Execute this command if a new event is present.")
+	RootCmd.PersistentFlags().StringVarP(&Prefix, "prefix", "p", "sifter", "Consul prefix for saved state.")
 	RootCmd.PersistentFlags().StringVarP(&Token, "token", "t", "anonymous", "Token for Consul access")
 	RootCmd.PersistentFlags().BoolVarP(&DogStatsd, "dogstatsd", "d", false, "send metrics to dogstatsd")
 }

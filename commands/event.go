@@ -74,7 +74,7 @@ type ConsulEvent struct {
 
 func createEventKey(event string) string {
 	hostname := getHostname()
-	return fmt.Sprintf("sifter/event/%s/%s", event, hostname)
+	return fmt.Sprintf("%s/event/%s/%s", Prefix, event, hostname)
 }
 
 func decodeEventStdin(data string) (string, int64, string) {
