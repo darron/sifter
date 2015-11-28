@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -24,8 +25,21 @@ func startKey(cmd *cobra.Command, args []string) {
 	stdin := readStdin()
 	if stdin != "null" {
 		d := decodeKeyStdin(stdin)
-		modified, key, value := d.examine()
-		Log(fmt.Sprintf("mod='%d' key='%s' value='%s'", modified, key, value), "info")
+		d.examine()
+		// Grab the URL we will use to check Consul.
+		url := d.getUrl()
+		// Create the SHA256 from the value as passed on stdin.
+		shaValue := d.getSHA()
+		// Get the previous value from Consul.
+		c, _ := Connect()
+		urlData := Get(c, url)
+		if shaValue != urlData {
+			Set(c, url, shaValue)
+			runCommand(Exec, "")
+			RunTime(start, "complete", fmt.Sprintf("watch='key' exec='%s' sha='%s'", Exec, shaValue))
+		} else {
+			RunTime(start, "duplicate", fmt.Sprintf("watch='key' exec='%s' sha='%s'", Exec, shaValue))
+		}
 	} else {
 		RunTime(start, "blank", fmt.Sprintf("watch='key' exec='%s'", Exec))
 	}
@@ -57,11 +71,25 @@ func decodeKeyStdin(data string) *ConsulKey {
 	return &key
 }
 
-func (c *ConsulKey) examine() (int, string, string) {
+func (c *ConsulKey) examine() {
 	modified := c.ModifyIndex
 	keyName := c.Key
 	value, _ := base64.StdEncoding.DecodeString(c.Value)
-	return modified, keyName, string(value)
+	Log(fmt.Sprintf("mod='%d' key='%s' value='%s'", modified, keyName, value), "debug")
+}
+
+func (c *ConsulKey) getUrl() string {
+	hostname := getHostname()
+	keyName := c.Key
+	url := fmt.Sprintf("%s/key/%s/%s", Prefix, keyName, hostname)
+	return url
+}
+
+func (c *ConsulKey) getSHA() string {
+	value, _ := base64.StdEncoding.DecodeString(c.Value)
+	shaValue := sha256.Sum256([]byte(value))
+	sha := fmt.Sprintf("%x", shaValue)
+	return sha
 }
 
 func init() {
