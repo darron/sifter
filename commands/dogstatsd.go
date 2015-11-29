@@ -31,3 +31,29 @@ func StatsdRunTime(start time.Time, exec string, watchType string, watchId strin
 		statsd.Gauge(metricName, float64(milliseconds), tags)
 	}
 }
+
+func StatsdDuplicate(watchType string, watchId string) {
+	if DogStatsd {
+		statsd, _ := godspeed.NewDefault()
+		defer statsd.Conn.Close()
+		tags := make([]string, 2)
+		watchTypeTag := fmt.Sprintf("watchtype:%s", watchType)
+		watchIdTag := fmt.Sprintf("watchid:%s", watchId)
+		tags = append(tags, watchTypeTag)
+		tags = append(tags, watchIdTag)
+		metricName := fmt.Sprintf("%s.duplicate", MetricPrefix)
+		statsd.Incr(metricName, tags)
+	}
+}
+
+func StatsdBlank(watchType string) {
+	if DogStatsd {
+		statsd, _ := godspeed.NewDefault()
+		defer statsd.Conn.Close()
+		tags := make([]string, 1)
+		watchTypeTag := fmt.Sprintf("watchtype:%s", watchType)
+		tags = append(tags, watchTypeTag)
+		metricName := fmt.Sprintf("%s.blank", MetricPrefix)
+		statsd.Incr(metricName, tags)
+	}
+}

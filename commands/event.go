@@ -44,12 +44,12 @@ func startEvent(cmd *cobra.Command, args []string) {
 			StatsdRunTime(start, Exec, "event", EventName, strconv.FormatInt(lTime, 10))
 		} else {
 			RunTime(start, "duplicate", fmt.Sprintf("watch='event' exec='%s' ltime='%d'", Exec, lTime))
+			StatsdDuplicate("event", EventName)
 		}
-
 	} else {
 		RunTime(start, "blank", fmt.Sprintf("watch='event' exec='%s'", Exec))
+		StatsdBlank("event")
 	}
-
 }
 
 func checkEventFlags() {

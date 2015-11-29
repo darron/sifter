@@ -40,9 +40,11 @@ func startKey(cmd *cobra.Command, args []string) {
 			StatsdRunTime(start, Exec, "key", d.getKey(), shaValue)
 		} else {
 			RunTime(start, "duplicate", fmt.Sprintf("watch='key' exec='%s' sha='%s'", Exec, shaValue))
+			StatsdDuplicate("key", d.getKey())
 		}
 	} else {
 		RunTime(start, "blank", fmt.Sprintf("watch='key' exec='%s'", Exec))
+		StatsdBlank("key")
 	}
 }
 
