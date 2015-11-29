@@ -3,7 +3,7 @@
     {
       "type": "event",
       "name": "chef-client",
-      "handler": "bin/sifter event -d true -m='dsifter.time' -e 'w'"
+      "handler": "bin/sifter event -d true -m='dsifter' -e 'w'"
     }
   ]
 }

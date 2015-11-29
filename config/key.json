@@ -3,7 +3,7 @@
     {
       "type": "key",
       "key": "singlekey",
-      "handler": "bin/sifter key -d true -m='dsifter.time' -e 'w'"
+      "handler": "bin/sifter key -d true -m='dsifter' -e 'w'"
     }
   ]
 }

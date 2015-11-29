@@ -27,6 +27,7 @@ func StatsdRunTime(start time.Time, exec string, watchType string, watchId strin
 		statsd, _ := godspeed.NewDefault()
 		defer statsd.Conn.Close()
 		tags := makeTags(exec, watchType, watchId, id)
-		statsd.Gauge(MetricName, float64(milliseconds), tags)
+		metricName := fmt.Sprintf("%s.time", MetricPrefix)
+		statsd.Gauge(metricName, float64(milliseconds), tags)
 	}
 }
