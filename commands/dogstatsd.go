@@ -23,7 +23,7 @@ func StatsdRunTime(start time.Time, exec string, watchType string, watchId strin
 	if DogStatsd {
 		elapsed := time.Since(start)
 		milliseconds := int64(elapsed / time.Millisecond)
-		Log(fmt.Sprintf("dogstatsd='true' %s='%s' exec='%s' id='%s' elapsed='%s'", watchType, watchId, exec, id, elapsed), "info")
+		Log(fmt.Sprintf("dogstatsd='true' %s='%s' exec='%s' id='%s' elapsed='%s'", watchType, watchId, exec, id, elapsed), "debug")
 		statsd, _ := godspeed.NewDefault()
 		defer statsd.Conn.Close()
 		tags := makeTags(exec, watchType, watchId, id)
