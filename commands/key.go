@@ -24,23 +24,26 @@ func startKey(cmd *cobra.Command, args []string) {
 	start := time.Now()
 	stdin := readStdin()
 	if stdin != "null" {
-		d := decodeKeyStdin(stdin)
-		d.examine()
-		// Grab the URL we will use to check Consul.
-		url := d.getUrl()
+		watchEvent := decodeKeyStdin(stdin)
+		watchEvent.examine()
+		// What key are we watching?
+		watchKey := watchEvent.getKey()
+		// Grab the URL we will use to check Consul's previous SHA.
+		nodeUrl := watchEvent.makeURL()
 		// Create the SHA256 from the value as passed on stdin.
-		shaValue := d.getSHA()
+		watchSHA := watchEvent.makeSHA()
+		// Connect to Consul.
+		consul, _ := Connect()
 		// Get the previous value from Consul.
-		c, _ := Connect()
-		urlData := Get(c, url)
-		if shaValue != urlData {
-			Set(c, url, shaValue)
+		previousSHA := Get(consul, nodeUrl)
+		if watchSHA != previousSHA {
+			Set(consul, nodeUrl, watchSHA)
 			runCommand(Exec, "")
-			RunTime(start, "complete", fmt.Sprintf("watch='key' exec='%s' sha='%s'", Exec, shaValue))
-			StatsdRunTime(start, Exec, "key", d.getKey(), shaValue)
+			RunTime(start, "complete", fmt.Sprintf("watch='key' exec='%s' sha='%s'", Exec, watchSHA))
+			StatsdRunTime(start, Exec, "key", watchKey, watchSHA)
 		} else {
-			RunTime(start, "duplicate", fmt.Sprintf("watch='key' exec='%s' sha='%s'", Exec, shaValue))
-			StatsdDuplicate("key", d.getKey())
+			RunTime(start, "duplicate", fmt.Sprintf("watch='key' exec='%s' sha='%s'", Exec, watchSHA))
+			StatsdDuplicate("key", watchKey)
 		}
 	} else {
 		RunTime(start, "blank", fmt.Sprintf("watch='key' exec='%s'", Exec))
@@ -55,7 +58,7 @@ func checkKeyFlags() {
 	}
 }
 
-type ConsulKey struct {
+type KeyWatch struct {
 	CreateIndex int    `json:"CreateIndex"`
 	Flags       int    `json:"Flags,omitempty"`
 	Key         string `json:"Key"`
@@ -65,8 +68,8 @@ type ConsulKey struct {
 	Value       string `json:"Value"`
 }
 
-func decodeKeyStdin(data string) *ConsulKey {
-	var key ConsulKey
+func decodeKeyStdin(data string) *KeyWatch {
+	var key KeyWatch
 	err := json.Unmarshal([]byte(data), &key)
 	if err != nil {
 		Log(fmt.Sprintf("error: %s", err), "info")
@@ -74,29 +77,30 @@ func decodeKeyStdin(data string) *ConsulKey {
 	return &key
 }
 
-func (c *ConsulKey) examine() {
-	modified := c.ModifyIndex
-	keyName := c.Key
-	value, _ := base64.StdEncoding.DecodeString(c.Value)
-	Log(fmt.Sprintf("mod='%d' key='%s' value='%s'", modified, keyName, value), "debug")
+func (w *KeyWatch) examine() {
+	created := w.CreateIndex
+	modified := w.ModifyIndex
+	keyName := w.getKey()
+	value, _ := base64.StdEncoding.DecodeString(w.Value)
+	Log(fmt.Sprintf("examine modifyIndex='%d' createIndex='%d' key='%s' value='%s'", modified, created, keyName, value), "debug")
 }
 
-func (c *ConsulKey) getUrl() string {
+func (w *KeyWatch) makeURL() string {
 	hostname := getHostname()
-	keyName := c.Key
+	keyName := w.Key
 	url := fmt.Sprintf("%s/key/%s/%s", Prefix, keyName, hostname)
 	return url
 }
 
-func (c *ConsulKey) getSHA() string {
-	value, _ := base64.StdEncoding.DecodeString(c.Value)
+func (w *KeyWatch) makeSHA() string {
+	value, _ := base64.StdEncoding.DecodeString(w.Value)
 	shaValue := sha256.Sum256([]byte(value))
 	sha := fmt.Sprintf("%x", shaValue)
 	return sha
 }
 
-func (c *ConsulKey) getKey() string {
-	keyName := c.Key
+func (w *KeyWatch) getKey() string {
+	keyName := w.Key
 	return keyName
 }
 
