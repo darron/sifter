@@ -7,16 +7,16 @@ import (
 )
 
 func StatsdRunTime(start time.Time, exec string, watchType string, watchId string, id string) {
+	elapsed := time.Since(start)
 	if DogStatsd {
-		elapsed := time.Since(start)
 		milliseconds := int64(elapsed / time.Millisecond)
-		Log(fmt.Sprintf("dogstatsd='true' %s='%s' exec='%s' id='%s' elapsed='%s'", watchType, watchId, exec, id, elapsed), "debug")
 		statsd, _ := godspeed.NewDefault()
 		defer statsd.Conn.Close()
 		tags := makeTags(watchType, watchId, exec, id)
 		metricName := fmt.Sprintf("%s.time", MetricPrefix)
 		statsd.Gauge(metricName, float64(milliseconds), tags)
 	}
+	Log(fmt.Sprintf("dogstatsd='%t' %s='%s' exec='%s' id='%s' elapsed='%s'", DogStatsd, watchType, watchId, exec, id, elapsed), "debug")
 }
 
 func StatsdDuplicate(watchType string, watchId string) {
@@ -27,6 +27,7 @@ func StatsdDuplicate(watchType string, watchId string) {
 		metricName := fmt.Sprintf("%s.duplicate", MetricPrefix)
 		statsd.Incr(metricName, tags)
 	}
+	Log(fmt.Sprintf("dogstatsd='%t' %s='%s' action='duplicate'", DogStatsd, watchType, watchId), "debug")
 }
 
 func StatsdBlank(watchType string) {
@@ -37,6 +38,7 @@ func StatsdBlank(watchType string) {
 		metricName := fmt.Sprintf("%s.blank", MetricPrefix)
 		statsd.Incr(metricName, tags)
 	}
+	Log(fmt.Sprintf("dogstatsd='%t' watchType='%s' action='blank'", DogStatsd, watchType), "debug")
 }
 
 func makeTags(watchType, watchId, exec, id string) []string {
