@@ -22,29 +22,40 @@ var eventCmd = &cobra.Command{
 }
 
 func startEvent(cmd *cobra.Command, args []string) {
-	var oldEvent int64
+	var previousLTime int64
 	start := time.Now()
 
 	stdin := readStdin()
 	if stdin != "" {
-		EventName, lTime, Payload := decodeEventStdin(stdin)
-		lTimeString := strconv.FormatInt(int64(lTime), 10)
-		ConsulKey := createEventKey(EventName)
-
-		c, _ := Connect()
-		ConsulData := Get(c, ConsulKey)
-		if ConsulData != "" {
-			oldEvent, _ = strconv.ParseInt(ConsulData, 10, 64)
+		watchEvent := decodeEventStdin(stdin)
+		watchEvent.examine()
+		// Get event lTime
+		lTime := watchEvent.getLTime()
+		lTimeString := watchEvent.getLTimeString()
+		// Get the event Name.
+		eventName := watchEvent.getEventName()
+		// Grab the payload - if any.
+		payload := watchEvent.getPayload()
+		// Grab the URL we will use to check Consul's previous info.
+		nodeUrl := watchEvent.makeURL()
+		// Connect to Consul
+		consul, _ := Connect()
+		// Get the previous value from Consul.
+		previousData := Get(consul, nodeUrl)
+		// If there's previousData - turn it into an int64.
+		if previousData != "" {
+			previousLTime, _ = strconv.ParseInt(previousData, 10, 64)
 		}
-
-		if ConsulData == "" || oldEvent < lTime {
-			Set(c, ConsulKey, lTimeString)
-			runCommand(Exec, Payload)
+		// If there's no previousData OR the previousLTime is less than the current lTime.
+		// Then it's a new event - let's do the thing.
+		if previousData == "" || previousLTime < lTime {
+			Set(consul, nodeUrl, lTimeString)
+			runCommand(Exec, payload)
 			RunTime(start, "complete", fmt.Sprintf("watch='event' exec='%s' ltime='%d'", Exec, lTime))
-			StatsdRunTime(start, Exec, "event", EventName, strconv.FormatInt(lTime, 10))
+			StatsdRunTime(start, Exec, "event", eventName, lTimeString)
 		} else {
 			RunTime(start, "duplicate", fmt.Sprintf("watch='event' exec='%s' ltime='%d'", Exec, lTime))
-			StatsdDuplicate("event", EventName)
+			StatsdDuplicate("event", eventName)
 		}
 	} else {
 		RunTime(start, "blank", fmt.Sprintf("watch='event' exec='%s'", Exec))
@@ -59,7 +70,7 @@ func checkEventFlags() {
 	}
 }
 
-type ConsulEvent struct {
+type EventWatch struct {
 	Id            string `json:"ID"`
 	Name          string `json:"Name"`
 	Payload       string `json:"Payload,omitempty"`
@@ -70,13 +81,8 @@ type ConsulEvent struct {
 	LTime         int    `json:"LTime"`
 }
 
-func createEventKey(event string) string {
-	hostname := getHostname()
-	return fmt.Sprintf("%s/event/%s/%s", Prefix, event, hostname)
-}
-
-func decodeEventStdin(data string) (string, int64, string) {
-	events := make([]ConsulEvent, 0)
+func decodeEventStdin(data string) *EventWatch {
+	events := make([]EventWatch, 0)
 	err := json.Unmarshal([]byte(data), &events)
 	if err != nil {
 		Log(fmt.Sprintf("error: %s", data), "info")
@@ -84,11 +90,42 @@ func decodeEventStdin(data string) (string, int64, string) {
 	}
 	sortutil.DescByField(events, "LTime")
 	event := events[0]
-	name := event.Name
-	lTime := int64(event.LTime)
-	payload := event.Payload
-	Log(fmt.Sprintf("decoded event='%s' ltime='%d' payload='%s'", name, lTime, payload), "info")
-	return name, lTime, payload
+	return &event
+}
+
+func (w *EventWatch) makeURL() string {
+	hostname := getHostname()
+	eventName := w.getEventName()
+	url := fmt.Sprintf("%s/event/%s/%s", Prefix, eventName, hostname)
+	return url
+}
+
+func (w *EventWatch) getEventName() string {
+	name := w.Name
+	return name
+}
+
+func (w *EventWatch) getPayload() string {
+	payload := w.Payload
+	return payload
+}
+
+func (w *EventWatch) getLTime() int64 {
+	lTime := int64(w.LTime)
+	return lTime
+}
+
+func (w *EventWatch) getLTimeString() string {
+	lTime := w.getLTime()
+	lTimeString := strconv.FormatInt(lTime, 10)
+	return lTimeString
+}
+
+func (w *EventWatch) examine() {
+	name := w.getEventName()
+	lTime := w.getLTime()
+	payload := w.getPayload()
+	Log(fmt.Sprintf("decoded event='%s' ltime='%d' payload='%s'", name, lTime, payload), "debug")
 }
 
 func init() {
