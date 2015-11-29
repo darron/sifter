@@ -6,23 +6,27 @@ import (
 	"time"
 )
 
-func makeTags(event, exec, ltime string) []string {
-	tags := make([]string, 3)
-	eventTag := fmt.Sprintf("event:%s", event)
+func makeTags(exec, watchType, watchId, id string) []string {
+	tags := make([]string, 4)
 	execTag := fmt.Sprintf("exec:%s", exec)
-	lTimeTag := fmt.Sprintf("ltime:%s", ltime)
-	tags = append(tags, eventTag)
+	watchTypeTag := fmt.Sprintf("watchtype:%s", watchType)
+	watchIdTag := fmt.Sprintf("watchid:%s", watchId)
+	idTag := fmt.Sprintf("id:%s", id)
 	tags = append(tags, execTag)
-	tags = append(tags, lTimeTag)
+	tags = append(tags, watchTypeTag)
+	tags = append(tags, watchIdTag)
+	tags = append(tags, idTag)
 	return tags
 }
 
-func StatsdRunTime(start time.Time, event string, exec string, ltime int64) {
-	elapsed := time.Since(start)
-	milliseconds := int64(elapsed / time.Millisecond)
-	Log(fmt.Sprintf("dogstatsd='true' event='%s' exec='%s' ltime='%d' elapsed='%s'", event, exec, ltime, elapsed), "info")
-	statsd, _ := godspeed.NewDefault()
-	defer statsd.Conn.Close()
-	tags := makeTags(event, exec, string(ltime))
-	statsd.Gauge("sifter.time", float64(milliseconds), tags)
+func StatsdRunTime(start time.Time, exec string, watchType string, watchId string, id string) {
+	if DogStatsd {
+		elapsed := time.Since(start)
+		milliseconds := int64(elapsed / time.Millisecond)
+		Log(fmt.Sprintf("dogstatsd='true' %s='%s' exec='%s' id='%s' elapsed='%s'", watchType, watchId, exec, id, elapsed), "info")
+		statsd, _ := godspeed.NewDefault()
+		defer statsd.Conn.Close()
+		tags := makeTags(exec, watchType, watchId, id)
+		statsd.Gauge(MetricName, float64(milliseconds), tags)
+	}
 }

@@ -37,6 +37,7 @@ func startKey(cmd *cobra.Command, args []string) {
 			Set(c, url, shaValue)
 			runCommand(Exec, "")
 			RunTime(start, "complete", fmt.Sprintf("watch='key' exec='%s' sha='%s'", Exec, shaValue))
+			StatsdRunTime(start, Exec, "key", d.getKey(), shaValue)
 		} else {
 			RunTime(start, "duplicate", fmt.Sprintf("watch='key' exec='%s' sha='%s'", Exec, shaValue))
 		}
@@ -90,6 +91,11 @@ func (c *ConsulKey) getSHA() string {
 	shaValue := sha256.Sum256([]byte(value))
 	sha := fmt.Sprintf("%x", shaValue)
 	return sha
+}
+
+func (c *ConsulKey) getKey() string {
+	keyName := c.Key
+	return keyName
 }
 
 func init() {

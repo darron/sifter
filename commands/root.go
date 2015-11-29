@@ -15,15 +15,17 @@ var RootCmd = &cobra.Command{
 }
 
 var (
-	Exec      string
-	Token     string
-	DogStatsd bool
-	Prefix    string
+	Exec       string
+	Token      string
+	DogStatsd  bool
+	Prefix     string
+	MetricName string
 )
 
 func init() {
 	RootCmd.PersistentFlags().StringVarP(&Exec, "exec", "e", "", "Execute this command if a new event is present.")
 	RootCmd.PersistentFlags().StringVarP(&Prefix, "prefix", "p", "sifter", "Consul prefix for saved state.")
 	RootCmd.PersistentFlags().StringVarP(&Token, "token", "t", "anonymous", "Token for Consul access")
+	RootCmd.PersistentFlags().StringVarP(&MetricName, "metric", "m", "sifter.time", "Metric name for dogstatsd.")
 	RootCmd.PersistentFlags().BoolVarP(&DogStatsd, "dogstatsd", "d", false, "send metrics to dogstatsd")
 }

@@ -41,9 +41,7 @@ func startEvent(cmd *cobra.Command, args []string) {
 			Set(c, ConsulKey, lTimeString)
 			runCommand(Exec, Payload)
 			RunTime(start, "complete", fmt.Sprintf("watch='event' exec='%s' ltime='%d'", Exec, lTime))
-			if DogStatsd {
-				StatsdRunTime(start, EventName, Exec, lTime)
-			}
+			StatsdRunTime(start, Exec, "event", EventName, strconv.FormatInt(lTime, 10))
 		} else {
 			RunTime(start, "duplicate", fmt.Sprintf("watch='event' exec='%s' ltime='%d'", Exec, lTime))
 		}
