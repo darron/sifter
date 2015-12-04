@@ -3,9 +3,9 @@ package commands
 import (
 	"fmt"
 	consul "github.com/hashicorp/consul/api"
-	"strings"
 )
 
+// Connect sets up a connection to Consul and hands back a client.
 func Connect() (*consul.Client, error) {
 	config := consul.DefaultConfig()
 	config.Token = Token
@@ -14,6 +14,7 @@ func Connect() (*consul.Client, error) {
 	return consul, nil
 }
 
+// Get grabs a key's value from Consul.
 func Get(c *consul.Client, key string) string {
 	var value string
 	kv := c.KV()
@@ -30,12 +31,7 @@ func Get(c *consul.Client, key string) string {
 	return value
 }
 
-func cleanupToken(token string) string {
-	first := strings.Split(token, "-")
-	firstString := fmt.Sprintf("%s", first[0])
-	return firstString
-}
-
+// Set sets a key's value inside Consul.
 func Set(c *consul.Client, key, value string) bool {
 	p := &consul.KVPair{Key: key, Value: []byte(value)}
 	kv := c.KV()
@@ -43,8 +39,6 @@ func Set(c *consul.Client, key, value string) bool {
 	_, err := kv.Put(p, nil)
 	if err != nil {
 		panic(err)
-	} else {
-		return true
 	}
 	return true
 }
