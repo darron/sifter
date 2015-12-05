@@ -37,11 +37,11 @@ func startEvent(cmd *cobra.Command, args []string) {
 		// Grab the payload - if any.
 		payload := watchEvent.getPayload()
 		// Grab the URL we will use to check Consul's previous info.
-		nodeUrl := watchEvent.makeURL()
+		nodeURL := watchEvent.makeURL()
 		// Connect to Consul
 		consul, _ := Connect()
 		// Get the previous value from Consul.
-		previousData := Get(consul, nodeUrl)
+		previousData := Get(consul, nodeURL)
 		// If there's previousData - turn it into an int64.
 		if previousData != "" {
 			previousLTime, _ = strconv.ParseInt(previousData, 10, 64)
@@ -49,7 +49,7 @@ func startEvent(cmd *cobra.Command, args []string) {
 		// If there's no previousData OR the previousLTime is less than the current lTime.
 		// Then it's a new event - let's do the thing.
 		if previousData == "" || previousLTime < lTime {
-			Set(consul, nodeUrl, lTimeString)
+			Set(consul, nodeURL, lTimeString)
 			runCommand(Exec, payload)
 			RunTime(start, "complete", fmt.Sprintf("watch='event' exec='%s' ltime='%d'", Exec, lTime))
 			StatsdRunTime(start, Exec, "event", eventName, lTimeString)
@@ -70,8 +70,9 @@ func checkEventFlags() {
 	}
 }
 
+// EventWatch is the JSON structure of a Consul Event.
 type EventWatch struct {
-	Id            string `json:"ID"`
+	ID            string `json:"ID"`
 	Name          string `json:"Name"`
 	Payload       string `json:"Payload,omitempty"`
 	NodeFilter    string `json:"NodeFilter,omitempty"`
@@ -82,7 +83,7 @@ type EventWatch struct {
 }
 
 func decodeEventStdin(data string) *EventWatch {
-	events := make([]EventWatch, 0)
+	var events []EventWatch
 	err := json.Unmarshal([]byte(data), &events)
 	if err != nil {
 		Log(fmt.Sprintf("error: %s", data), "info")

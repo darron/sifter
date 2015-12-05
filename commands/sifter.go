@@ -25,9 +25,8 @@ func runCommand(command, payload string) bool {
 	if err != nil {
 		Log(fmt.Sprintf("exec='error' message='%v'", err), "info")
 		return false
-	} else {
-		return true
 	}
+	return true
 }
 
 func getHostname() string {
@@ -40,7 +39,6 @@ func readStdin() string {
 	stdin := string(bytes)
 	if stdin == "" || stdin == "[]\n" || stdin == "\n" {
 		return ""
-	} else {
-		return strings.TrimSpace(stdin)
 	}
+	return strings.TrimSpace(stdin)
 }

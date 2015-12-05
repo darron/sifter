@@ -29,15 +29,15 @@ func startKey(cmd *cobra.Command, args []string) {
 		// What key are we watching?
 		watchKey := watchEvent.getKey()
 		// Grab the URL we will use to check Consul's previous SHA.
-		nodeUrl := watchEvent.makeURL()
+		nodeURL := watchEvent.makeURL()
 		// Create the SHA256 from the value as passed on stdin.
 		watchSHA := watchEvent.makeSHA()
 		// Connect to Consul.
 		consul, _ := Connect()
 		// Get the previous value from Consul.
-		previousSHA := Get(consul, nodeUrl)
+		previousSHA := Get(consul, nodeURL)
 		if watchSHA != previousSHA {
-			Set(consul, nodeUrl, watchSHA)
+			Set(consul, nodeURL, watchSHA)
 			runCommand(Exec, "")
 			RunTime(start, "complete", fmt.Sprintf("watch='key' exec='%s' sha='%s'", Exec, watchSHA))
 			StatsdRunTime(start, Exec, "key", watchKey, watchSHA)
@@ -58,6 +58,7 @@ func checkKeyFlags() {
 	}
 }
 
+// KeyWatch is the JSON structure of a Consul key watch.
 type KeyWatch struct {
 	CreateIndex int    `json:"CreateIndex"`
 	Flags       int    `json:"Flags,omitempty"`

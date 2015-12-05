@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// Log sends logs to syslog.
 func Log(message, priority string) {
 	switch {
 	case priority == "debug":
@@ -19,6 +20,7 @@ func Log(message, priority string) {
 
 }
 
+// RunTime shows logs with timing information.
 func RunTime(start time.Time, location, extra string) {
 	elapsed := time.Since(start)
 	log := fmt.Sprintf("location='%s' elapsed='%s'", location, elapsed)
