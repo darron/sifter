@@ -1,4 +1,4 @@
-box: octohost/go-1.5.1
+box: darron/go-wercker
 build:
   steps:
     # Build the project
@@ -16,12 +16,11 @@ deploy:
     - script:
         name: package build
         code: |
-          sudo apt-get install -y git make unzip ruby1.9.1 ruby1.9.1-dev libssl-dev
-          sudo gem install fpm-cookery package_cloud --no-ri --no-rdoc
           cd build
           sudo fpm-cook install-deps
           sudo fpm-cook
           PACKAGECLOUD=$(eval echo "\$PACKAGECLOUD_TOKEN") && echo -e "$PACKAGECLOUD" > ~/.packagecloud && chmod 600 ~/.packagecloud
+          DEB_FILE=$(find . -name '*.deb') && package_cloud push darron/sifter/ubuntu/trusty $DEB_FILE
           DEB_FILE=$(find . -name '*.deb') && package_cloud push darron/octohost/ubuntu/trusty $DEB_FILE
   after-steps:
     - wantedly/pretty-slack-notify:

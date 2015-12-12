@@ -2,7 +2,7 @@ class Sifter < FPM::Cookery::Recipe
   name 'sifter'
 
   version '0.7'
-  revision '1'
+  revision '4'
   description 'sifter'
 
   homepage 'https://github.com/darron/sifter'
