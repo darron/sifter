@@ -2,12 +2,12 @@ class Sifter < FPM::Cookery::Recipe
   name 'sifter'
 
   version '0.7'
-  revision '4'
+  revision '5'
   description 'sifter'
 
   homepage 'https://github.com/darron/sifter'
   source "https://github.com/darron/sifter/releases/download/v#{version}/sifter-#{version}-linux-amd64.zip"
-  sha256 '367c98a025b7ff344b4e6cff14652acbcaab37ff06f795ac85b9ddef4a0cce96'
+  sha256 'f56329cae73810fa81173f87ca4e002b7244b00308bbf534afac7d37ac0467ae'
 
   maintainer 'Darron <darron@froese.org>'
   vendor 'octohost'
