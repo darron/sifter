@@ -45,7 +45,7 @@ Afterwards - if it sees the same event:
 
 During a cluster wide rollout of Consul changes - here are a number of events that were prevented from firing because they were duplicate or blank:
 
-![](http://shared.froese.org/2015/7w7to-10-49.jpg)
+![](http://shared.froese.org/2015/cexe8-15-41.jpg)
 
 I only want Consul watches to fire when they're supposed to.
 
