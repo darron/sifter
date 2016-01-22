@@ -35,4 +35,7 @@ gziplinux:
 consul:
 	consul agent -data-dir `mktemp -d` -config-dir=$(CONFIG_DIR) -bootstrap -server -bind=127.0.0.1
 
+consul_kill:
+	pkill consul
+
 release: clean build gziposx clean linux gziplinux clean
