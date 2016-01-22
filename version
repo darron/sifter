@@ -1,3 +1,0 @@
-#!/bin/bash
-SIFTER_VERSION="0.8-dev"
-echo $SIFTER_VERSION

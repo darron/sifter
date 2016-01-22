@@ -1,5 +1,5 @@
+SIFTER_VERSION="0.8-dev"
 GIT_COMMIT=$(shell git rev-parse HEAD)
-SIFTER_VERSION=$(shell ./version)
 COMPILE_DATE=$(shell date -u +%Y%m%d.%H%M%S)
 BUILD_FLAGS=-X main.CompileDate=$(COMPILE_DATE) -X main.GitCommit=$(GIT_COMMIT) -X main.Version=$(SIFTER_VERSION)
 CONFIG_DIR=$(shell cd config && pwd)
