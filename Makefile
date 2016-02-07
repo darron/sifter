@@ -7,10 +7,11 @@ CONFIG_DIR=$(shell cd config && pwd)
 all: build
 
 deps:
-	go get github.com/spf13/cobra
-	go get github.com/hashicorp/consul/api
-	go get github.com/PagerDuty/godspeed
-	go get github.com/pmylund/sortutil
+	go get -u github.com/spf13/cobra
+	go get -u github.com/hashicorp/consul/api
+	go get -u github.com/PagerDuty/godspeed
+	go get -u github.com/pmylund/sortutil
+	go get -u github.com/darron/sifter
 
 format:
 	gofmt -w .

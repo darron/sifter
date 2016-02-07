@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./commands/"
+	"github.com/darron/sifter/commands"
 	"log"
 	"log/syslog"
 	"runtime"
