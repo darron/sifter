@@ -24,7 +24,6 @@ Vagrant.configure(2) do |config|
   "node_name": "sifter-consul"
 }
 EOF
-    sudo service consul start
     sudo cat > /etc/profile.d/go.sh << EOF
 export GOROOT="/opt/go"
 export GOPATH="/home/vagrant/gocode"
