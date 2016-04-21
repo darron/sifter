@@ -8,7 +8,8 @@ Vagrant.configure(2) do |config|
     curl -sf -o /tmp/go1.6.1.linux-amd64.tar.gz -L https://storage.googleapis.com/golang/go1.6.1.linux-amd64.tar.gz
     sudo mkdir -p /opt && cd /opt && sudo tar xfz /tmp/go1.6.1.linux-amd64.tar.gz && rm -f /tmp/go1.6.1.linux-amd64.tar.gz
     curl -s https://packagecloud.io/install/repositories/darron/consul/script.deb.sh | sudo bash
-    sudo apt-get install -y consul git make graphviz
+    curl -s https://packagecloud.io/install/repositories/darron/consul-cli/script.deb.sh | sudo bash
+    sudo apt-get install -y consul git make graphviz consul-cli
     sudo mkdir -p /etc/consul.d /var/lib/consul /var/log/consul
     sudo ln -s /lib/init/upstart-job /etc/init.d/consul
     sudo tee /etc/consul.d/default.json << EOF
