@@ -9,8 +9,12 @@ import (
 func Connect() (*consul.Client, error) {
 	config := consul.DefaultConfig()
 	config.Token = Token
-	// config.Address = server
-	consul, _ := consul.NewClient(config)
+	config.Address = ConsulServer
+	consul, err := consul.NewClient(config)
+	if err != nil {
+		Log("Consul connection is bad.", "info")
+		return nil, err
+	}
 	return consul, nil
 }
 

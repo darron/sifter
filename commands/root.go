@@ -30,6 +30,9 @@ var (
 
 	// MetricPrefix is the prefix for all Sifter metrics.
 	MetricPrefix string
+
+	// ConsulServer is where we want to connect to Consul.
+	ConsulServer string
 )
 
 func init() {
@@ -38,4 +41,5 @@ func init() {
 	RootCmd.PersistentFlags().StringVarP(&Token, "token", "t", "anonymous", "Token for Consul access")
 	RootCmd.PersistentFlags().StringVarP(&MetricPrefix, "metric", "m", "sifter", "Metric name for dogstatsd.")
 	RootCmd.PersistentFlags().BoolVarP(&DogStatsd, "dogstatsd", "d", false, "send metrics to dogstatsd")
+	RootCmd.PersistentFlags().StringVarP(&ConsulServer, "server", "s", "localhost:8500", "Consul server location")
 }
